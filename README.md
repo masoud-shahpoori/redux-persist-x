@@ -159,3 +159,4 @@ Change the `alias` to point to where those packages are actually installed. This
 
 An alternative to fixing this problem would be to remove aliases altogether and define the dependencies referenced as aliases as dev dependencies instead. [However, that might cause other problems.](https://github.com/palmerhq/tsdx/issues/64)
 # redux-persist-x
+# redux-persist-x
