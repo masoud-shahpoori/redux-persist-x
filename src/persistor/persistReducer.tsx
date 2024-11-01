@@ -60,7 +60,7 @@ export function persistReducer<S, A extends Action>(
         return baseReducer(state, action);
 
       case PURGE_PERSIST_ACTION:
-        storage.clear(() => {}).then();
+        storage.removeItem(PERSIST_STORAGE_NAME).then();
         isPaused = true;
         return baseReducer(state, action);
       default:

@@ -20,7 +20,7 @@ export class DBStorageSingleton {
     return DBStorageSingleton.instance;
   }
 
-  private async initPersistDb(): Promise<void> {
+  private async initPersistDb(): Promise<void | unknown> {
     return new Promise((resolve, reject) => {
       const request = indexedDB.open(PERSIST_STORAGE_NAME, 1);
 

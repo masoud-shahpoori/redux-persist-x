@@ -77,7 +77,7 @@ export class DBStoragePersistor implements StorageInterface {
   async removeItem(
     key: string,
     callback?: (error?: Error) => void
-  ): Promise<undefined> {
+  ): Promise<undefined | unknown> {
     await this.dbReady;
 
     if (!this.db) throw new Error('Database not initialized');
@@ -104,7 +104,7 @@ export class DBStoragePersistor implements StorageInterface {
 
   async getAllKeys(
     callback?: (error?: Error, keys?: Array<string>) => void
-  ): Promise<string[]> {
+  ): Promise<string[] | unknown> {
     await this.dbReady;
 
     if (!this.db) throw new Error('Database not initialized');
@@ -130,7 +130,7 @@ export class DBStoragePersistor implements StorageInterface {
     });
   }
 
-  async clear(callback?: (error?: Error) => void): Promise<boolean> {
+  async clear(callback?: (error?: Error) => void): Promise<boolean | unknown> {
     await this.dbReady;
 
     if (!this.db) throw new Error('Database not initialized');

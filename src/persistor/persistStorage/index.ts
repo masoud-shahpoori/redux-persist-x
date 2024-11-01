@@ -6,11 +6,11 @@ import { DBStoragePersistor } from './DBStoragePersistor';
 export type StorageType = 'localStorage' | 'sessionStorage' | 'indexedDB';
 
 export const storageBuilder = (name: StorageType): StorageInterface => {
-  const hashTable: Record<StorageType, StorageInterface> = {
-    localStorage: new LocalStoragePersistor(),
-    sessionStorage: new SessionStoragePersistor(),
-    indexedDB: new DBStoragePersistor(),
-  };
+  if (name === 'indexedDB') {
+    return new DBStoragePersistor();
+  } else if (name === 'sessionStorage') {
+    return new SessionStoragePersistor();
+  }
 
-  return hashTable[name] as StorageInterface;
+  return new LocalStoragePersistor();
 };
