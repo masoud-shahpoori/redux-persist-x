@@ -3,8 +3,8 @@ export interface StorageSetDataType {
   value: any;
 }
 
-export const PERSIST_STORAGE_NAME = "root:persistStorage";
-export const PERSIST_STORAGE_OBJECT_KEY = "persistStorage-cache-store";
+export const PERSIST_STORAGE_NAME = 'root:persistStorage';
+export const PERSIST_STORAGE_OBJECT_KEY = 'persistStorage-cache-store';
 
 export abstract class StorageInterface {
   abstract setItem(
@@ -21,11 +21,13 @@ export abstract class StorageInterface {
   abstract removeItem(
     key: string,
     callback?: (error?: Error) => void
-  ): Promise<undefined>;
+  ): Promise<undefined | unknown>;
 
   abstract getAllKeys(
     callback?: (error?: Error, keys?: Array<string>) => void
-  ): Promise<string[]> | Promise<undefined>;
+  ): Promise<string[]> | Promise<undefined | unknown>;
 
-  abstract clear(callback?: (error?: Error) => void): Promise<boolean>;
+  abstract clear(
+    callback?: (error?: Error) => void
+  ): Promise<boolean | unknown>;
 }
