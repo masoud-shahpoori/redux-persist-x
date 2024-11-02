@@ -81,7 +81,7 @@ function PersistWrapper({
     };
   }, []);
 
-  return <div>{children}</div>;
+  return <>{children}</>;
 }
 
 export default PersistWrapper;
