@@ -44,7 +44,7 @@ export function persistReducer<S, A extends Action>(
       case REHYDRATE_PERSIST_ACTION:
         if (!isPaused && action.payload) {
           return {
-            ...baseReducer,
+            ...state,
             ...action.payload,
           };
         }
