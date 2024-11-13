@@ -3,6 +3,7 @@ import {
   PERSIST_STORAGE_NAME,
   StorageInterface,
 } from './persistStorage/storageInterface';
+import isEqual from 'lodash.isequal';
 
 export type Reducer<S = any, A extends Action = Action> = (
   state: S,
@@ -31,7 +32,44 @@ export const REHYDRATE_PERSIST_ACTION = 'PERSIST/REHYDRATE';
 export const PAUSE_PERSIST_ACTION = 'PERSIST/PAUSE';
 export const PURGE_PERSIST_ACTION = 'PERSIST/PURGE';
 export const PERSIST_ACTION = 'PERSIST/PERSIST';
+function debounce<T extends (...args: any[]) => void>(
+  func: T,
+  delay: number
+): (...args: Parameters<T>) => void {
+  let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
+  return (...args: Parameters<T>) => {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+
+    timeoutId = setTimeout(() => {
+      func(...args);
+    }, delay);
+  };
+}
+const handlePersistData = async (store: Record<any, any>) => {
+  if (
+    persistReducerOptions.whiteList?.length &&
+    Object.keys(store).length > 0
+  ) {
+    const whiteListInStore = await persistReducerOptions.whiteList.reduce(
+      (acc: any, curr: string) => {
+        return {
+          ...acc,
+          [curr as string]: store?.[curr as string] as any,
+        };
+      },
+      {}
+    );
+    if (!isPaused) {
+      const db =
+        persistReducerOptions.storage ||
+        storageBuilder(persistReducerOptions.storageType || 'localStorage');
+      db.setItem(PERSIST_STORAGE_NAME, whiteListInStore).then(() => {});
+    }
+  }
+};
 export function persistReducer<S, A extends Action>(
   baseReducer: Reducer<S, A>,
   options?: PersistReducerOptionsType
@@ -39,7 +77,18 @@ export function persistReducer<S, A extends Action>(
   persistReducerOptions = options || {};
   const storage =
     options?.storage || storageBuilder(options?.storageType || 'localStorage');
+  const update = debounce(state => handlePersistData(state), 500);
+  let prevWhiteList = {};
   return (state, action: any) => {
+    const newWhiteList = options?.whiteList?.reduce((acc: any, curr: any) => {
+      return { ...acc, [curr as string]: state?.[curr as string] };
+    }, {});
+
+    if (!isEqual(newWhiteList, prevWhiteList)) {
+      update(state);
+    }
+
+    prevWhiteList = newWhiteList;
     switch (action.type) {
       case REHYDRATE_PERSIST_ACTION:
         if (!isPaused && action.payload) {

@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import {
-  isPaused,
   PAUSE_PERSIST_ACTION,
   persistReducerOptions,
   PURGE_PERSIST_ACTION,
@@ -25,29 +24,6 @@ function PersistWrapper({
   store: Persistor;
   children: any;
 }) {
-  const handleBeforeUnload = async () => {
-    if (
-      persistReducerOptions.whiteList?.length &&
-      Object.keys(store.getState()).length > 0
-    ) {
-      const whiteListInStore = await persistReducerOptions.whiteList.reduce(
-        (acc: any, curr: string) => {
-          return {
-            ...acc,
-            [curr as string]: store.getState()[curr as string] as any,
-          };
-        },
-        {}
-      );
-      if (!isPaused) {
-        const db =
-          persistReducerOptions.storage ||
-          storageBuilder(persistReducerOptions.storageType || 'localStorage');
-        db.setItem(PERSIST_STORAGE_NAME, whiteListInStore).then();
-      }
-    }
-  };
-
   const handleInitPersistData = async () => {
     if (
       persistReducerOptions?.whiteList &&
@@ -73,12 +49,6 @@ function PersistWrapper({
   useEffect(() => {
     globalStore = store;
     handleInitPersistData().then();
-
-    window.addEventListener('beforeunload', handleBeforeUnload);
-
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-    };
   }, []);
 
   return <>{children}</>;
